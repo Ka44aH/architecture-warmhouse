@@ -8,6 +8,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: smarthome
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "smarthome" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
     ports:
       - "5432:5432"
     volumes:

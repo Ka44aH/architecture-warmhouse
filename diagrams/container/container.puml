@@ -1,5 +1,5 @@
 @startuml
-title Warm House Container Diagram
+title Smart House Container Diagram
 
 top to bottom direction
 
@@ -7,22 +7,50 @@ top to bottom direction
 
 Person(user, "User", "A user of the warm house system")
 Person(support, "Support", "A support managing the system")
-Person(device, "Device", "A smart device", $sprite="robot")
-System(WarmHouseSystem, "Warm House System", "System managing smart devices")
 
-Container_Boundary(WarmHouseSystem, "WarmHouse System") {
-  Container(WebApp, "Web Application", "Golang", "Handles user interactions")
-  Container(PaymentService, "Payment Service", "Node.js", "Processes payments")
-  ContainerDb(Database, "Database", "PostgreSQL", "Stores user data and schedules")
+System(SmartHouseSystem, "Smart House System", "System managing smart devices")
+
+Container_Boundary(SmartHouseSystem, "Smart House System") {
+
+  Container(Gateway, "Gateway", "Golang", "Routing")
+
+  Container(AuthService, "Auth Service", "Golang", "Authentication and Authorization")
+  ContainerDb(AuthDatabase, "Auth Database", "PostgreSQL", "Stores user data, tokens, sessions")
+
+  Container(DeviceService, "Device Service", "Golang", "Register devices")
+  ContainerDb(DeviceDatabase, "Device Database", "PostgreSQL", "Stores device data, houses")
+
+  Container(SchedulerService, "Scheduler Service", "Golang", "Send and register periodical task")
+  ContainerDb(SchedulerDatabase, "Scheduler Database", "PostgreSQL", "Stores tasks")
+
+  Container(DeviceHubService, "Device Hub Service", "Golang", "Connect with device")
+  ContainerDb(DeviceHubDatabase, "Device Hub Database", "PostgreSQL", "Stores device info for connect")
+  ContainerQueue(DeviceHubQueue, "Device Hub Queue", "Kafka", "Stores device task, telemetry, etc")
+
+  Container(TelemetryService, "Telemetry Service", "Golang", "Get or listen telemetry data")
+  ContainerDb(TelemetryDatabase, "Telemetry Database", "ClickHouse", "Stores device telemetry")
 }
 
-System_Ext(api, "Third-Party API", "External API for fitness data integration")
-System_Ext(bank, "Bank System", "External bank for processing payments")
+System_Ext(api, "Third-Party API", "External API for manage device")
 
-Rel(user, WebApp, "Uses the system")
-Rel(support, WebApp,"Manages the system")
-Rel(WebApp,PaymentService,"Processes payment requests")
-Rel(PaymentService,bank,"Processes payments")
-Rel(WebApp,Database,"Reads/Writes user data")
-Rel(WebApp,api,"Fetches fitness data")
+Rel(user, Gateway, "Uses the system")
+Rel(support, Gateway, "Manages the system and support users")
+
+Rel(Gateway, AuthService, "Authentication and Authorization")
+Rel(AuthService, AuthDatabase, "Store user data")
+
+Rel(Gateway, DeviceService, "Register devices")
+Rel(DeviceService, DeviceDatabase, "Stores device data, houses")
+
+Rel(Gateway, SchedulerService, "Register periodical tasks")
+Rel(SchedulerService, SchedulerDatabase, "Stores device tasks")
+
+Rel(Gateway, TelemetryService, "Get or listen telemetry")
+Rel(TelemetryService, TelemetryDatabase, "Stores device telemetry")
+
+Rel(DeviceHubService, api, "Manage device")
+Rel(DeviceHubService, DeviceHubDatabase, "Stores device tokens")
+Rel(DeviceHubService, DeviceHubQueue, "Consume and produce events")
+Rel(TelemetryDatabase, DeviceHubQueue, "Listen and store events")
+Rel(SchedulerService, DeviceHubQueue, "Publish tasks")
 @enduml

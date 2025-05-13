@@ -6,12 +6,19 @@ top to bottom direction
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
 Person(user, "User", "A user of the SwarmHouse system")
-Person(user, "User", "A user of the SwarmHouse system")
-System(SwarmHouseSystem, "Swarm House System", "System managing devices")
+System(SwarmHouseSystem, "Smart House System", "System managing devices")
 
-System_Ext(HeatingSystem, "Heating System", "External Heating System for managing")
+System_Ext(HeatingSystemExt, "Heating System", "External Heating System for managing")
+System_Ext(LightingSystemExt, "Lightning System", "External Lightning System for managing")
+System_Ext(VisionSystemExt, "Vision System", "External Vision System for managing")
+System_Ext(GateSystemExt, "Gate System", "External Gate System for managing")
+System_Ext(UnknownDeviceSystemExt, "Device System", "External Unknown Device System for managing")
 
 Rel(user, SwarmHouseSystem, "Uses the system")
-Rel(SwarmHouseSystem,HeatingSystem,"Manage and register devices")
+Rel(SwarmHouseSystem, HeatingSystemExt, "Manage and register devices")
+Rel(SwarmHouseSystem, LightingSystemExt, "Manage and register devices")
+Rel(SwarmHouseSystem, VisionSystemExt, "Manage and register devices")
+Rel(SwarmHouseSystem, GateSystemExt, "Manage and register devices")
+Rel(SwarmHouseSystem, UnknownDeviceSystemExt, "Manage and register devices")
 
 @enduml

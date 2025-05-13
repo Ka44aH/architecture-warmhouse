@@ -1,0 +1,26 @@
+@startuml
+title SmartHouse Gateway Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(SmartHouseSystem, "SmartHouse System") {
+  Container(Gateway, "Gateway", "Golang", "Handles user interactions")
+}
+
+Container(Gateway, "Gateway", "Golang") {
+  Component(AuthController, "AuthController", "Handles authentication and authorization via Auth Service")
+  Component(UserController, "UserController", "Manages user profiles")
+  Component(ScheduleController, "ScheduleController", "Manages schedules")
+  Component(PaymentController, "PaymentController", "Handles payment processing")
+  Component(ServiceLayer, "Service Layer", "Business logic")
+  Component(RepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Rel(AuthController,ServiceLayer,"Calls business logic")
+Rel(UserController,ServiceLayer,"Calls business logic")
+Rel(ScheduleController,ServiceLayer,"Calls business logic")
+Rel(PaymentController,ServiceLayer,"Calls business logic")
+Rel(ServiceLayer,RepositoryLayer,"Reads/Writes data")
+@enduml
